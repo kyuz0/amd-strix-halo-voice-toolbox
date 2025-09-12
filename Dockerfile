@@ -35,7 +35,7 @@ RUN pip install --no-cache-dir packaging && \
 
 # VibeVoice
 RUN git clone --depth=1 https://github.com/kyuz0/VibeVoice /opt/VibeVoice && \
-    python -m pip install --prefer-binary -e .
+    cd /opt/VibeVoice && python -m pip install --prefer-binary -e .
 
 # CSM-1B
 COPY scripts/csm-1b.py /opt/csm
