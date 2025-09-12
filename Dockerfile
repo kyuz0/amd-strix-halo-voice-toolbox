@@ -25,9 +25,11 @@ WORKDIR /opt
 # Flash-Attention
 ENV FLASH_ATTENTION_TRITON_AMD_ENABLE="TRUE"
 
-RUN git clone https://github.com/ROCm/flash-attention.git &&\ 
-    cd flash-attention &&\
-    git checkout main_perf &&\
+
+RUN pip install --no-cache-dir packaging && \
+    git clone https://github.com/ROCm/flash-attention.git && \
+    cd flash-attention && \
+    git checkout main_perf && \
     python setup.py install && \
     cd /opt && rm -rf /opt/flash-attention
 
