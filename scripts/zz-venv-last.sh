@@ -13,6 +13,3 @@ case "$PROMPT_COMMAND" in
   *_venv_path_fix*) : ;;
   *) PROMPT_COMMAND="_venv_path_fix${PROMPT_COMMAND:+;$PROMPT_COMMAND}" ;;
 esac
-
-# Fix crashes by linking the correct library
-export LD_PRELOAD=/opt/venv/lib/python3.13/site-packages/llvmlite/binding/libllvmlite.so
