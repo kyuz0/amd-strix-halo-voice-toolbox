@@ -25,8 +25,7 @@ WORKDIR /opt
 # Flash-Attention
 ENV FLASH_ATTENTION_TRITON_AMD_ENABLE="TRUE"
 
-
-RUN pip install --no-cache-dir packaging && \
+RUN pip install --no-cache-dir einops packaging && \
     git clone https://github.com/ROCm/flash-attention.git && \
     cd flash-attention && \
     git checkout main_perf && \
@@ -36,9 +35,6 @@ RUN pip install --no-cache-dir packaging && \
 # VibeVoice
 RUN git clone --depth=1 https://github.com/kyuz0/VibeVoice /opt/VibeVoice && \
     cd /opt/VibeVoice && python -m pip install --prefer-binary -e .
-
-# CSM-1B
-COPY scripts/csm-1b.py /opt/csm
 
 # Permissions & trims (keep compilers/headers)
 RUN chmod -R a+rwX /opt && chmod +x /opt/*.sh || true && \

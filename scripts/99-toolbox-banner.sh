@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Lightweight banner with machine/GPU and ROCm nightly version
+# Lightweight banner with machine/GPU and ROCm nightly version — STRIX HALO Voice toolbox
 
 # Load ROCm env quietly if present
 [[ -f /etc/profile.d/01-rocm-env-for-triton.sh ]] && . /etc/profile.d/01-rocm-env-for-triton.sh
@@ -37,7 +37,6 @@ gpu_name() {
   if [[ -z "$name" ]] && command -v lspci >/dev/null 2>&1; then
     name=$(lspci -nn 2>/dev/null | grep -Ei 'vga|display|gpu' | grep -i amd | head -n1 | cut -d: -f3-)
   fi
-  # trim leading/trailing spaces and squeeze multiple spaces to one
   name=$(printf '%s' "$name" | sed -e 's/^[[:space:]]\+//' -e 's/[[:space:]]\+$//' -e 's/[[:space:]]\{2,\}/ /g')
   printf '%s\n' "${name:-Unknown AMD GPU}"
 }
@@ -63,31 +62,30 @@ ROCM_VER="$(rocm_version)"
 
 echo
 cat <<'ASCII'
-███████╗████████╗██████╗ ██╗██╗  ██╗      ██╗  ██╗ █████╗ ██╗      ██████╗ 
+███████╗████████╗██████╗ ██╗██╗  ██╗      ██╗  ██╗ █████╗ ██╗      ██████╗
 ██╔════╝╚══██╔══╝██╔══██╗██║╚██╗██╔╝      ██║  ██║██╔══██╗██║     ██╔═══██╗
 ███████╗   ██║   ██████╔╝██║ ╚███╔╝       ███████║███████║██║     ██║   ██║
 ╚════██║   ██║   ██╔══██╗██║ ██╔██╗       ██╔══██║██╔══██║██║     ██║   ██║
 ███████║   ██║   ██║  ██║██║██╔╝ ██╗      ██║  ██║██║  ██║███████╗╚██████╔╝
-╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝      ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝ 
+╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝      ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝
 
-                         I M A G E   &   V I D E O                        
-
+                                V O I C E                        
 ASCII
+
 echo
-printf 'AMD STRIX HALO — Image & Video Toolbox (gfx1151, ROCm via TheRock)\n'
+printf 'STRIX HALO — Voice Toolbox (gfx1151, ROCm)\n'
 [[ -n "$ROCM_VER" ]] && printf 'ROCm nightly: %s\n' "$ROCM_VER"
+
 echo
 printf 'Machine: %s\n' "$MACHINE"
 printf 'GPU    : %s\n\n' "$GPU"
-printf 'Repo   : https://github.com/kyuz0/amd-strix-halo-image-video-toolboxes\n'
-printf 'Image  : docker.io/kyuz0/amd-strix-halo-image-video:latest\n\n'
-printf 'Included:\n'
-printf '  - %-16s → %s\n' "Qwen Image Studio" "start_qwen_studio (http://localhost:8000)"
-printf '  - %-16s → %s\n' "WAN 2.2 (CLI)"     "cd /opt/wan-video-studio && python generate.py ..."
-printf '  - %-16s → %s\n' "ComfyUI"            "start_comfy_ui (http://localhost:8000)"
+printf 'Image  : docker.io/kyuz0/amd-strix-halo-voice:latest\n\n'
+printf 'Usage:\n'
+printf '  - %-24s → %s\n' "VibeVoice (Gradio)" "cd /opt/VibeVoice && python demo/gradio_demo.py --model_path \$HOME/VibeVoice-Large --port 8000 --custom-voices-folder \$HOME/voices"
+
 echo
+printf 'Custom voices: put .wav files in $HOME/voices (or pass --custom-voices-folder).\n'
 printf 'SSH tip: ssh -L 8000:localhost:8000 user@host\n\n'
 
-# Aliases
-alias start_qwen_studio='cd /opt/qwen-image-studio && uvicorn qwen-image-studio.server:app --reload --host 0.0.0.0 --port 8000'
-alias start_comfy_ui='cd /opt/ComfyUI && python main.py --port 8000 --output-directory $HOME/comfy-outputs --disable-mmap'
+# Handy alias for quick start
+alias start_vibevoice='cd /opt/VibeVoice && python demo/gradio_demo.py --model_path "$HOME/VibeVoice-Large" --port 8000 --custom-voices-folder "$HOME/voices"'
