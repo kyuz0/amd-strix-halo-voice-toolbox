@@ -13,3 +13,4 @@ case "$PROMPT_COMMAND" in
   *_venv_path_fix*) : ;;
   *) PROMPT_COMMAND="_venv_path_fix${PROMPT_COMMAND:+;$PROMPT_COMMAND}" ;;
 esac
+

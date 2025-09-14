@@ -54,6 +54,9 @@ RUN chmod 0644 /etc/profile.d/99-toolbox-banner.sh
 COPY scripts/zz-venv-last.sh /etc/profile.d/zz-venv-last.sh
 RUN chmod 0644 /etc/profile.d/zz-venv-last.sh
 
+COPY scripts/vibevoice /usr/local/bin
+RUN chmod a+x /usr/local/bin/vibevoice
+
 # Disable core dumps in interactive shells (helps with recovering faster from ROCm crashes)
 RUN printf 'ulimit -S -c 0\n' > /etc/profile.d/90-nocoredump.sh && chmod 0644 /etc/profile.d/90-nocoredump.sh
 

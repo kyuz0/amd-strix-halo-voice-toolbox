@@ -81,11 +81,9 @@ printf 'Machine: %s\n' "$MACHINE"
 printf 'GPU    : %s\n\n' "$GPU"
 printf 'Image  : docker.io/kyuz0/amd-strix-halo-voice:latest\n\n'
 printf 'Usage:\n'
-printf '  - %-24s → %s\n' "VibeVoice (Gradio)" "cd /opt/VibeVoice && python demo/gradio_demo.py --model_path \$HOME/VibeVoice-Large --port 8000 --custom-voices-folder \$HOME/voices"
+printf '  - %-24s → %s\n' "VibeVoice (Gradio)" "vibevoice --model_path ~/VibeVoice-Large --port 8000"
 
 echo
 printf 'Custom voices: put .wav files in $HOME/voices (or pass --custom-voices-folder).\n'
 printf 'SSH tip: ssh -L 8000:localhost:8000 user@host\n\n'
 
-# Handy alias for quick start
-alias start_vibevoice='cd /opt/VibeVoice && python demo/gradio_demo.py --model_path "$HOME/VibeVoice-Large" --port 8000 --custom-voices-folder "$HOME/voices"'

@@ -9,6 +9,7 @@ base = pathlib.Path(r.__file__).parent / "lib" / "llvm" / "bin"
 lib  = pathlib.Path(r.__file__).parent / "lib"
 print(f'export TRITON_HIP_LLD_PATH="{base / "ld.lld"}"')
 print(f'export TRITON_HIP_CLANG_PATH="{base / "clang++"}"')
+print(f'export LD_LIBRARY_PATH="{lib}:$LD_LIBRARY_PATH"')
 PY
 )"
 
