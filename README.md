@@ -21,11 +21,9 @@ A Fedora **toolbox** image with a full **ROCm** environment for **VibeVoice** on
 
 * [1. Overview](#1-overview)
 * [2. Create & Enter the Toolbox](#2-create--enter-the-toolbox)
-
   * [2.1. Ubuntu Users](#21-ubuntu-users)
 * [3. Get the Model Weights](#3-get-the-model-weights)
 * [4. Run the Gradio Demo](#4-run-the-gradio-demo)
-
   * [4.1. Basic Run](#41-basic-run)
   * [4.2. SSH Port Forwarding](#42-ssh-port-forwarding)
 * [5. Custom Voices (Outside the Toolbox)](#5-custom-voices-outside-the-toolbox)
@@ -95,10 +93,7 @@ HF_HUB_ENABLE_HF_TRANSFER=1 hf download aoi-ot/VibeVoice-Large --local-dir "$HOM
 ### 4.1. Basic Run
 
 ```bash
-cd /opt/VibeVoice
-python demo/gradio_demo.py \
-  --model_path "$HOME/VibeVoice-Large/" \
-  --port 8000 
+vibevoice --model_path "$HOME/VibeVoice-Large/" --port 8000 
 ```
 
 Open: [http://localhost:8000](http://localhost:8000)
@@ -128,9 +123,7 @@ cp my_speaker.wav "$HOME/voices/"
 You can also point the script to a different folder:
 
 ```bash
-python demo/gradio_demo.py \
-  --model_path "$HOME/VibeVoice-Large/" \
-  --port 8000 \
+vibevoice --model_path "$HOME/VibeVoice-Large/" --port 8000 \
   --custom-voices-folder "$HOME/my-other-voices"
 ```
 
@@ -154,12 +147,4 @@ Everything above is **outside** the toolbox/container, so it persists across upd
 
 * **Responsible use:** Only use voices you have rights to. Avoid impersonation/misuse.
 * **GPU access:** On Ubuntu, ensure you’ve applied the udev rules above. On Fedora, just ensure your user is in `video` and `render` groups.
-* **Stability:** This is a lean voice toolbox; if you need unified memory tuning for very large models, see your image/video toolbox notes.
-
----
-
-## 8. Credits & Links
-
-* VibeVoice (Microsoft) — original project & demos
-* Docker image: `docker.io/kyuz0/amd-strix-halo-voice`
 
