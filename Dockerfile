@@ -1,4 +1,4 @@
-FROM registry.fedoraproject.org/fedora:rawhide
+FROM registry.fedoraproject.org/fedora:42
 
 # Base packages (keep compilers/headers for Triton JIT at runtime)
 RUN dnf -y install --setopt=install_weak_deps=False --nodocs \
@@ -15,10 +15,11 @@ RUN printf 'source /opt/venv/bin/activate\n' > /etc/profile.d/venv.sh
 RUN python -m pip install --upgrade pip setuptools wheel
 
 # ROCm + PyTorch (TheRock, include torchaudio for resolver; remove later)
-ARG ROCM_INDEX=https://d2awnip2yjpvqn.cloudfront.net/v2/gfx1151/
+ARG ROCM_INDEX=https://rocm.nightlies.amd.com/v2/gfx1151/
 RUN python -m pip install --index-url ${ROCM_INDEX} 'rocm[libraries,devel]' && \
-    python -m pip install --index-url ${ROCM_INDEX} \
-      torch torchvision torchaudio==2.7.1a0 pytorch-triton-rocm numpy
+    python -m pip install \
+        --index-url ${ROCM_INDEX} \
+        --pre torch torchaudio torchvision
 
 WORKDIR /opt
 

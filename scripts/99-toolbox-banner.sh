@@ -81,7 +81,7 @@ printf 'Machine: %s\n' "$MACHINE"
 printf 'GPU    : %s\n\n' "$GPU"
 printf 'Image  : docker.io/kyuz0/amd-strix-halo-voice:latest\n\n'
 printf 'Usage:\n'
-printf '  - %-24s → %s\n' "VibeVoice (Gradio)" "vibevoice --model_path ~/VibeVoice-Large --port 8000"
+printf '  - %-24s → %s\n' "VibeVoice (Gradio)" "  "
 
 echo
 printf 'Custom voices: put .wav files in $HOME/voices (or pass --custom-voices-folder).\n'
