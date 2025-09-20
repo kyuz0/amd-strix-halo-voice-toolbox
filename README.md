@@ -148,3 +148,28 @@ Everything above is **outside** the toolbox/container, so it persists across upd
 * **Responsible use:** Only use voices you have rights to. Avoid impersonation/misuse.
 * **GPU access:** On Ubuntu, ensure you’ve applied the udev rules above. On Fedora, just ensure your user is in `video` and `render` groups.
 
+
+## 8. Fix for ROCm + VibeVoice segfaults
+
+### Problem
+VibeVoice segfaulted during audio generation because `librosa` imported `numba`, which pulled in `llvmlite`.  
+`llvmlite` bound against ROCm’s `libLLVM.so` (in `$LD_LIBRARY_PATH`), causing crashes.
+
+### Solution
+- Removed real `numba/llvmlite`.  
+- Added a shim at `/opt/vv_shims/numba.py` with no-op `jit`, `njit`, etc.  
+- Wrapper sets:
+
+```bash
+  PYTHONPATH=/opt/vv_shims
+  NUMBA_DISABLE_JIT=1
+  LIBROSA_DISABLE_NUMBA=1
+```
+
+* This avoids `llvmlite` and forces pure-Python paths.
+
+### Impact
+
+* Slightly slower preprocessing.
+* Inference and audio generation run stably with ROCm.
+

@@ -1,68 +1,23 @@
 #!/usr/bin/env bash
-# -----------------------------------------------------------------------------
-# vibevoice — scoped launcher for VibeVoice
-#
-# WHY:
-#   - numba/llvmlite JIT crashes under Python 3.13 unless libllvmlite is
-#     preloaded. Global LD_PRELOAD breaks other binaries and causes Heisenbugs.
-#   - This script preloads *only* for the VibeVoice demo process.
-#
-# WHAT IT DOES:
-#   1) Optionally sets LD_PRELOAD to libllvmlite.so from the venv.
-#   2) Executes the demo, forwarding *all* user-provided arguments.
-#
-# OVERRIDES:
-#   - Set NO_LLVMLITE_PRELOAD=1 to disable the preload.
-#   - Set LLVMLITE_PRELOAD_PATH=/path/to/libllvmlite.so to use a custom path.
-#   - (Optional) If librosa jit ever misbehaves, you can export:
-#       LIBROSA_DISABLE_NUMBA=1
-#
-# USAGE EXAMPLES:
-#   vibevoice --model_path /mnt/storage/VibeVoice-Large/ --port 8000
-#   NO_LLVMLITE_PRELOAD=1 vibevoice --model_path /data/Model --share false
-#   LLVMLITE_PRELOAD_PATH=/alt/llvmlite.so vibevoice --model_path /data
-#
-# INSTALL:
-#   Copy to /usr/local/bin/vibevoice and chmod +x /usr/local/bin/vibevoice
-# -----------------------------------------------------------------------------
+set -euo pipefail
 
-set -Eeuo pipefail
+# defaults (can be overridden by CLI flags)
+DEFAULT_MODEL_PATH="/mnt/storage/VibeVoice-Large/"
+DEFAULT_PORT="8000"
 
-# Paths (adjust if your layout differs)
-VENV_DIR="/opt/venv"
-PY_BIN="${PY_BIN:-$VENV_DIR/bin/python}"
-DEMO="/opt/VibeVoice/demo/gradio_demo.py"
+# ensure our numba shim is found first and disable real JIT usage
+export PYTHONPATH="/opt/vv_shims:${PYTHONPATH:-}"
+export NUMBA_DISABLE_JIT=1
+export LIBROSA_DISABLE_NUMBA=1
 
-# Resolve libllvmlite path (lib64 first, then lib)
-LL_DEFAULT_1="$VENV_DIR/lib64/python3.13/site-packages/llvmlite/binding/libllvmlite.so"
-LL_DEFAULT_2="$VENV_DIR/lib/python3.13/site-packages/llvmlite/binding/libllvmlite.so"
-LL="${LLVMILTE_PRELOAD_PATH:-${LLVMLITE_PRELOAD_PATH:-}}"
-if [[ -z "${LL:-}" ]]; then
-  if [[ -f "$LL_DEFAULT_1" ]]; then
-    LL="$LL_DEFAULT_1"
-  elif [[ -f "$LL_DEFAULT_2" ]]; then
-    LL="$LL_DEFAULT_2"
-  else
-    LL=""
-  fi
+# build arg list, inject defaults only if missing
+ARGS=()
+if ! printf '%s\0' "$@" | grep -q -- '--model_path'; then
+  ARGS+=(--model_path "$DEFAULT_MODEL_PATH")
+fi
+if ! printf '%s\0' "$@" | grep -q -- '--port'; then
+  ARGS+=(--port "$DEFAULT_PORT")
 fi
 
-# Preload only for this process unless explicitly disabled
-if [[ -z "${NO_LLVMLITE_PRELOAD:-}" ]]; then
-  if [[ -n "$LL" && -f "$LL" ]]; then
-    export LD_PRELOAD="$LL${LD_PRELOAD:+:$LD_PRELOAD}"
-  else
-    echo "vibevoice: warning: libllvmlite.so not found; running without LD_PRELOAD" >&2
-  fi
-fi
-
-# Sanity checks (warn only; don’t block)
-if [[ ! -x "$PY_BIN" ]]; then
-  echo "vibevoice: warning: python not found at $PY_BIN" >&2
-fi
-if [[ ! -f "$DEMO" ]]; then
-  echo "vibevoice: warning: demo not found at $DEMO" >&2
-fi
-
-# Hand off to the demo, forwarding all CLI args unchanged
-exec "$PY_BIN" "$DEMO" "$@"
+# hand off to the demo
+exec /opt/venv/bin/python /opt/VibeVoice/demo/gradio_demo.py "${ARGS[@]}" "$@"

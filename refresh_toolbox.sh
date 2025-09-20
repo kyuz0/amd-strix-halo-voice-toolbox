@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-NAME="strix-halo-image-video"
+NAME="strix-halo-voice"
 IMAGE="docker.io/kyuz0/amd-strix-halo-voice:latest"
 REPO="${IMAGE%:*}"  # docker.io/kyuz0/amd-strix-halo-voice
 

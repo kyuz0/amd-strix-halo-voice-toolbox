@@ -37,6 +37,64 @@ RUN pip install --no-cache-dir einops packaging && \
 RUN git clone --depth=1 https://github.com/kyuz0/VibeVoice /opt/VibeVoice && \
     cd /opt/VibeVoice && python -m pip install --prefer-binary -e .
 
+# --- numba shim (prevents llvmlite/LLVM segfaults when librosa imports numba) ---
+RUN mkdir -p /opt/vv_shims && \
+    cat > /opt/vv_shims/numba.py <<'PY'
+"""
+Minimal no-op numba shim to satisfy optional imports (e.g., librosa) without
+pulling llvmlite/LLVM. All decorators return the original function/class.
+"""
+__version__ = "0.0-shim"
+
+def _passthrough(f): 
+    return f
+
+def jit(*args, **kwargs): 
+    return _passthrough
+
+def njit(*args, **kwargs): 
+    return _passthrough
+
+def vectorize(*args, **kwargs): 
+    return _passthrough
+
+def guvectorize(*args, **kwargs): 
+    return _passthrough
+
+def cfunc(*args, **kwargs): 
+    return _passthrough
+
+def generated_jit(*args, **kwargs): 
+    return _passthrough
+
+def stencil(*args, **kwargs): 
+    return _passthrough
+
+def jitclass(*args, **kwargs):
+    def _wrap(cls): 
+        return cls
+    return _wrap
+
+def typeof(x): 
+    return type(x)
+
+def prange(*args): 
+    return range(*args)
+
+class cuda:
+    @staticmethod
+    def is_available(): 
+        return False
+
+class config:
+    DISABLE_JIT = True
+
+__all__ = [
+    "jit","njit","vectorize","guvectorize","cfunc","generated_jit",
+    "stencil","jitclass","typeof","prange","cuda","config","__version__"
+]
+PY
+
 # Permissions & trims (keep compilers/headers)
 RUN chmod -R a+rwX /opt && chmod +x /opt/*.sh || true && \
     find /opt/venv -type f -name "*.so" -exec strip -s {} + 2>/dev/null || true && \
@@ -55,6 +113,7 @@ RUN chmod 0644 /etc/profile.d/99-toolbox-banner.sh
 COPY scripts/zz-venv-last.sh /etc/profile.d/zz-venv-last.sh
 RUN chmod 0644 /etc/profile.d/zz-venv-last.sh
 
+# Wrapper (updated below) + any other scripts you already ship
 COPY scripts/vibevoice /usr/local/bin
 RUN chmod a+x /usr/local/bin/vibevoice
 
@@ -62,4 +121,3 @@ RUN chmod a+x /usr/local/bin/vibevoice
 RUN printf 'ulimit -S -c 0\n' > /etc/profile.d/90-nocoredump.sh && chmod 0644 /etc/profile.d/90-nocoredump.sh
 
 CMD ["/bin/bash"]
-
