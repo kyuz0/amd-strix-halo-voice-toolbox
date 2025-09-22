@@ -15,6 +15,10 @@ A Fedora **toolbox** image with a full **ROCm** environment for **VibeVoice** on
 
 > Container image: `docker.io/kyuz0/amd-strix-halo-voice:latest`
 
+## Watch the YouTube Video
+
+[![Watch the YouTube Video](https://img.youtube.com/vi/jeBqYNWRLEc/maxresdefault.jpg)](https://youtu.be/jeBqYNWRLEc)
+
 ---
 
 ## Table of Contents
